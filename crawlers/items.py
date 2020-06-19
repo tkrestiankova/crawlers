@@ -12,7 +12,6 @@ class Profile(scrapy.Item):
     name = scrapy.Field()
     phone = scrapy.Field()
     website = scrapy.Field()
-    info_source = scrapy.Field()
 
     def save(self) -> None:
         """
@@ -23,7 +22,6 @@ class Profile(scrapy.Item):
                 self["name"],
                 self["phone"],
                 self["website"],
-                self["info_source"]
             ))
         else:
             ts = repr(time.time())[:10]

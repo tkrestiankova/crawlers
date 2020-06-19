@@ -36,7 +36,7 @@ def update_profile(profile: tuple) -> bool:
 def instert_profile(profile: tuple) -> bool:
 	query = (
 		"""
-		INSERT INTO profiles(name,phone,website,info_source)
+		INSERT INTO profiles(name,phone,website)
 		VALUES(?,?,?,?)
 		"""
 	)

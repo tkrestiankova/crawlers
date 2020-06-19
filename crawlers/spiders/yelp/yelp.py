@@ -77,7 +77,6 @@ class ProfileSpider(scrapy.spiders.crawl.CrawlSpider):
         profile = items.Profile(
             name=self.value(cls=const.name_cls),
             phone=self.value(cls=const.phone_cls, parent=contact_info),
-            website=self.value(cls=const.web_cls, parent=contact_info),
-            info_source=f"https://www.yelp.{self.tld}"
+            website=self.value(cls=const.web_cls, parent=contact_info)
         )
         profile.save()

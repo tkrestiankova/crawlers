@@ -1,5 +1,8 @@
 # queries.py
 
+# TODO store to redis and load from redis
+# determine id insert or update before using queries
+
 from typing import Union
 
 from .helpers import Session, execute
@@ -9,15 +12,25 @@ def create_profiles_table() -> bool:
     query = (
     	"""
     	CREATE TABLE IF NOT EXISTS profiles (
-    		name text NOT NULL,
+    		name text PRIMARY KEY,
     		phone text,
-    		website text,
-            info_source text NOT NULL,
-            primary key (name, info_source)
+    		website text
     	);
     	"""
     )
     return execute(query=query)
+
+
+def update_profile(profile: tuple) -> bool:
+    query = (
+        """
+        UPDATE profiles
+        SET phone = ?,
+            website = ?
+        WHERE name = ?
+        """
+    )
+    return execute(query=query, data=profile)
 
 
 def instert_profile(profile: tuple) -> bool:

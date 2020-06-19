@@ -28,4 +28,4 @@ BOT_NAME = "crawlers"
 
 SPIDER_MODULES = ["crawlers.spiders"]
 NEWSPIDER_MODULE = "crawlers.spiders"
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False

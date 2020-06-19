@@ -5,6 +5,7 @@ import scrapy
 import time
 
 from . import settings
+from .database import queries
 
 
 class Profile(scrapy.Item):
@@ -14,8 +15,16 @@ class Profile(scrapy.Item):
     info_source = scrapy.Field()
 
     def save(self) -> None:
+        """
+            Save profile into local DB
+        """
         if settings.is_prod_env():
-            return
+            queries.instert_profile(profile=(
+                self["name"],
+                self["phone"],
+                self["website"],
+                self["info_source"]
+            ))
         else:
             ts = repr(time.time())[:10]
             with open(f"crawlers/results/{ts}.json", "w+") as new_file:

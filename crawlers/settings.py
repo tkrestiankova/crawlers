@@ -22,6 +22,7 @@ def is_prod_env() -> bool:
 def is_local_env() -> bool:
     return ENVIRONMENT == "local"
 
+DB_NAME = "crawlers.db"
 
 # Scrapy settings
 BOT_NAME = "crawlers"

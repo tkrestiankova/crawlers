@@ -5,7 +5,8 @@ import scrapy.utils.project
 import click
 import re
 
-from . import spiders
+from . import spiders, utils
+from .database import queries
 
 
 def get_yelp_spider(url: str):
@@ -67,4 +68,7 @@ def run_yelp_spider(profile_url: str = None, list_url: str = None) -> None:
 
 
 if __name__ == "__main__":
+    if not queries.create_profiles_table():
+        print("Unable to create profiles table")
+        exit()
     run_yelp_spider()

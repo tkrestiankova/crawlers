@@ -1,5 +1,9 @@
 # yelp_constants.py
 
+# WEBSITES
+yelp_us = "www.yelp.com"
+yelp_pt = "www.yelp.pt"
+
 # GET PROFILE URLS FROM LIST
 list_url_ul_cls = (
     "lemon--ul__373c0__1_cxs undefined list__373c0__2G8oH"

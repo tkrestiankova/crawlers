@@ -29,3 +29,6 @@ BOT_NAME = "crawlers"
 SPIDER_MODULES = ["crawlers.spiders"]
 NEWSPIDER_MODULE = "crawlers.spiders"
 ROBOTSTXT_OBEY = False
+
+RETRY_TIMES = 5
+RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]

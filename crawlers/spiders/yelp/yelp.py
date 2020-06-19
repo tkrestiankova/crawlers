@@ -7,15 +7,15 @@ import requests
 import scrapy
 from typing import List
 
-from .. import items
-from ..user_agents import USER_AGENTS
-from ..proxies import PROXIES
+from ... import items
+from ...user_agents import USER_AGENTS
+from ...proxies import PROXIES
 from . import yelp_constants as const
 
-URL = "https://www.yelp.com"
 
 class ProfileSpider(scrapy.spiders.crawl.CrawlSpider):
     name = "profile_spider"
+    tld = "com"
 
     def __init__(self, url: str, list_url: bool = False):
         """
@@ -38,7 +38,7 @@ class ProfileSpider(scrapy.spiders.crawl.CrawlSpider):
         )
         for param in params:
             yield scrapy.Request(
-                f"{URL}{param}",
+                f"https://www.yelp.{self.tld}{param.get()}",
                 callback=self.parse
             )
 
@@ -77,6 +77,7 @@ class ProfileSpider(scrapy.spiders.crawl.CrawlSpider):
         profile = items.Profile(
             name=self.value(cls=const.name_cls),
             phone=self.value(cls=const.phone_cls, parent=contact_info),
-            website=self.value(cls=const.web_cls, parent=contact_info)
+            website=self.value(cls=const.web_cls, parent=contact_info),
+            info_source=f"https://www.yelp.{self.tld}"
         )
         profile.save()

@@ -3,8 +3,18 @@
 import scrapy.crawler
 import scrapy.utils.project
 import click
+import re
 
 from . import spiders
+
+
+def get_yelp_spider(url: str):
+    if utils.is_yelp_us_website(url):
+        return spiders.yelp.yelp_us.USProfileSpider
+    elif utils.is_yelp_pt_website(url):
+        return spiders.yelp.yelp_pt.PTProfileSpider
+    else:
+        return
 
 
 @click.command()
@@ -19,26 +29,41 @@ from . import spiders
     help="List of yelp profiles for crawling"
 )
 def run_yelp_spider(profile_url: str = None, list_url: str = None) -> None:
-    """
-        Run spider for given URL
-    """
-    process = scrapy.crawler.CrawlerProcess(
-        scrapy.utils.project.get_project_settings()
-    )
-    spider = spiders.yelp.ProfileSpider
 
-    if profile_url is not None:
-        process.crawl(spider, url=profile_url)
-    elif list_url is not None:
-        process.crawl(spider, url=list_url, list_url=True)
-    else:
+    if all([
+        profile_url is None,
+        list_url is None
+    ]):
         print(
             "Please provide at least one of the following options: \n"
             "--profile-url, --list-url.\n"
             "For mor information use --help option"
         )
-        return
-    process.start()
+        exit()
+
+    from_list = False
+    url = None
+    spider = None
+
+    if list_url is not None:
+        from_list = True
+        url = list_url
+        spider = get_yelp_spider(list_url)
+    else:
+        url = profile_url
+        spider = get_yelp_spider(profile_url)
+
+    if spider:
+        process = scrapy.crawler.CrawlerProcess(
+            scrapy.utils.project.get_project_settings()
+        )
+        process.crawl(spider, url=url, list_url=from_list)
+        process.start()
+    else:
+        print(
+            "Please provide Portuguese or US yelp website"
+        )
+        exit()
 
 
 if __name__ == "__main__":

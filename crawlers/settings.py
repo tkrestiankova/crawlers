@@ -21,3 +21,11 @@ def is_prod_env() -> bool:
 
 def is_local_env() -> bool:
     return ENVIRONMENT == "local"
+
+
+# Scrapy settings
+BOT_NAME = "crawlers"
+
+SPIDER_MODULES = ["crawlers.spiders"]
+NEWSPIDER_MODULE = "crawlers.spiders"
+ROBOTSTXT_OBEY = True

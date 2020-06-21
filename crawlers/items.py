@@ -9,13 +9,16 @@ from .database import queries
 
 
 class Profile(scrapy.Item):
+    """
+        Yelp profile
+    """
     name = scrapy.Field()
     phone = scrapy.Field()
     website = scrapy.Field()
 
     def save(self) -> None:
         """
-            Save profile into local DB
+            Save Yelp profile
         """
         if settings.is_prod_env():
             queries.instert_profile(profile=(

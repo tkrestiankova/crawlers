@@ -1,6 +1,7 @@
 # settings.py
 
 import os
+from enum import Enum
 
 from .logger import get_logger
 
@@ -23,6 +24,13 @@ def is_local_env() -> bool:
     return ENVIRONMENT == "local"
 
 DB_NAME = "crawlers.db"
+
+class CLIOptions(str, Enum):
+    """
+        Supported CLI options
+    """
+    list_url = "--list-url"
+    profile_url = "--profile-url"
 
 # Scrapy settings
 BOT_NAME = "crawlers"

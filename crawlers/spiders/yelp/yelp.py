@@ -17,13 +17,13 @@ class ProfileSpider(scrapy.spiders.crawl.CrawlSpider):
     name = "profile_spider"
     tld = "com"
 
-    def __init__(self, url: str, list_url: bool = False):
+    def __init__(self, url: str, is_list_url: bool = False):
         """
             Either init spider with profile url or
             with url containing links to profiles
         """
         self.url = url
-        self.list_url = list_url
+        self.is_list_url = is_list_url
 
     def parse_profile_url(self, response):
         """
@@ -56,7 +56,7 @@ class ProfileSpider(scrapy.spiders.crawl.CrawlSpider):
         return parent.xpath(f".//{elem}[@class='{cls}']/text()").get()
 
     def start_requests(self):
-        if self.list_url:
+        if self.is_list_url:
             yield scrapy.Request(
                 self.url,
                 callback=self.parse_profile_url,

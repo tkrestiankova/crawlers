@@ -21,11 +21,11 @@ class Profile(scrapy.Item):
             Save Yelp profile
         """
         if settings.is_prod_env():
-            queries.instert_profile(profile=(
-                self["name"],
-                self["phone"],
-                self["website"],
-            ))
+            queries.profiles_add(profile={
+                "name": self["name"],
+                "phone": self["phone"],
+                "website": self["website"]
+            })
         else:
             ts = repr(time.time())[:10]
             with open(f"crawlers/results/{ts}.json", "w+") as new_file:

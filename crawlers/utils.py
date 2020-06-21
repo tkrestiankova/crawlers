@@ -1,5 +1,6 @@
 # utils.py
 
+import datetime
 import re
 
 from .settings import CLIOptions
@@ -24,3 +25,19 @@ def cli_help() -> str:
         f"{_options}.\n"
         "For mor information use --help option"
     )
+
+
+def alchemy_to_dict(
+    model: object,
+) -> dict:
+    """
+        Convert SQLAlchemy model to dictionary.
+    """
+    dictionary = {}
+    for key in model.__table__.columns.keys():
+        if hasattr(model, key):
+            value = getattr(model, key)
+            if isinstance(value, datetime.date):
+                value = value.isoformat()
+            dictionary[key] = value
+    return dictionary

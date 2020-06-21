@@ -1,6 +1,9 @@
 # helpers.py
 
-import sqlite3
+import sqlalchemy
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.exc import SQLAlchemyError
 from typing import Union
 
 from .. import settings
@@ -9,36 +12,25 @@ from ..logger import get_logger
 log = get_logger(__name__)
 
 
-class Session:
-    def __init__(self):
-        self.session = None
-    def __enter__(self):
-        self.session = sqlite3.connect(settings.DB_NAME)
-        self.cursor = self.session.cursor()
-        return self
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.session.close()
+def create_db(url: str) -> tuple:
+    """
+        Create database engine, session and model base
+        for specified database url
+    """
+    db_engine = sqlalchemy.create_engine(url)
+    db_session = scoped_session(
+        sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+    )
+    base = declarative_base()
+    base.query = db_session.query_property()
+
+    return db_engine, db_session, base
 
 
-def execute(
-    query: str,
-    fetchall: bool = False,
-    data: tuple = None
-) -> Union[bool, list]:
-    """
-        Execute and commit SQL query
-    """
-    with Session() as conn:
-        try:
-            if data:
-                conn.cursor.execute(query, data)
-            else:
-                conn.cursor.execute(query)
-            conn.session.commit()
-            if fetchall:
-                return conn.cursor.fetchall()
-            return True
-        except sqlite3.Error as e:
-            log.error(e, exc_info=True)
-            conn.cursor.execute("rollback")
-            return False
+def commit_session(session, func_name: str) -> Union[bool, None]:
+    try:
+        session.commit()
+        return True
+    except SQLAlchemyError:
+        log.error(f"DBError: {func_name} failed.")
+        session.rollback()

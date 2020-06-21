@@ -23,7 +23,7 @@ def is_prod_env() -> bool:
 def is_local_env() -> bool:
     return ENVIRONMENT == "local"
 
-DB_NAME = "crawlers.db"
+DB_URL = "sqlite:///crawlers.db"
 
 class CLIOptions(str, Enum):
     """

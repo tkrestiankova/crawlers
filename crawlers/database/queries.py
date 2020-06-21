@@ -1,52 +1,63 @@
 # queries.py
 
-# TODO store to redis and load from redis
-# determine id insert or update before using queries
+from typing import List
 
-from typing import Union
+from .. import utils
+from . import models
+from .helpers import commit_session
+from . import CRAWLERS_DB_SESSION
 
-from .helpers import Session, execute
+
+def profiles_get() -> List[dict]:
+    """
+        Get all yelp profiles
+    """
+    profiles_alchemy = models.Profiles.query.all()
+    return [utils.alchemy_to_dict(p) for p in profiles_alchemy]
 
 
-def create_profiles_table() -> bool:
-    query = (
-    	"""
-    	CREATE TABLE IF NOT EXISTS profiles (
-    		name text PRIMARY KEY,
-    		phone text,
-    		website text
-    	);
-    	"""
+def profiles_add(profile: dict) -> None:
+    """
+        Add new yelp profile
+    """
+    CRAWLERS_DB_SESSION.add(models.Profiles(
+        name=profile["name"],
+        phone=profile["phone"],
+        website=profile["website"]
+    ))
+    commit_session(
+        session=CRAWLERS_DB_SESSION,
+        func_name='profiles_add'
     )
-    return execute(query=query)
 
 
-def update_profile(profile: tuple) -> bool:
-    query = (
-        """
-        UPDATE profiles
-        SET phone = ?,
-            website = ?
-        WHERE name = ?
-        """
+def profiles_update(profile: dict) -> None:
+    """
+        Update yelp profile
+    """
+    CRAWLERS_DB_SESSION.merge(
+        models.Profiles(
+            name=profile["name"],
+            phone=profile["phone"],
+            website=profile["website"]
+        )
     )
-    return execute(query=query, data=profile)
+    commit_session(
+        session=CRAWLERS_DB_SESSION,
+        func_name='profiles_update'
+    )
 
 
-def instert_profile(profile: tuple) -> bool:
-	query = (
-		"""
-		INSERT INTO profiles(name,phone,website)
-		VALUES(?,?,?,?)
-		"""
-	)
-	return execute(query=query, data=profile)
+def profiles_delete(profile: dict) -> None:
+    """
+        Delete yelp profile
+    """
+    existing_profile = models.Profiles.query.filter(
+        models.Profiles.name == profile["name"],
+    ).first()
 
-
-def get_profiles() -> Union[bool, list]:
-	query = (
-		"""
-		SELECT * from profiles
-		"""
-	)
-	return execute(query=query, fetchall=True)
+    CRAWLERS_DB_SESSION.delete(existing_profile)
+    commit_session(
+        session=CRAWLERS_DB_SESSION,
+        func_name='profiles_delete'
+    )

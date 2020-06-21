@@ -6,7 +6,7 @@ import click
 
 from . import spiders, utils
 from .settings import CLIOptions
-from .database import queries
+from .database import CRAWLERS_DB_SESSION
 
 
 SPIDERS = {
@@ -35,7 +35,7 @@ def run_yelp_spider(profile_url: str = None, list_url: str = None) -> None:
         exit()
 
     # Init spider process
-    from_list = True if list_url else False
+    is_list_url = True if list_url else False
     url = list_url if list_url else profile_url
     spider = SPIDERS.get(utils.yelp_tld(url=url))
 
@@ -43,7 +43,7 @@ def run_yelp_spider(profile_url: str = None, list_url: str = None) -> None:
         process = scrapy.crawler.CrawlerProcess(
             scrapy.utils.project.get_project_settings()
         )
-        process.crawl(spider, url=url, list_url=from_list)
+        process.crawl(spider, url=url, is_list_url=is_list_url)
         process.start()
     else:
         raise Exception(
@@ -52,6 +52,8 @@ def run_yelp_spider(profile_url: str = None, list_url: str = None) -> None:
 
 
 if __name__ == "__main__":
-    if not queries.create_profiles_table():
-        raise Exception("DBError: Unable to create profiles table")
-    run_yelp_spider()
+    try:
+        run_yelp_spider()
+    finally:
+        CRAWLERS_DB_SESSION.remove()
+        CRAWLERS_DB_SESSION.bind.pool.dispose()

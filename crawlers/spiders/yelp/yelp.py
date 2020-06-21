@@ -3,7 +3,6 @@
 from lxml import html
 import random
 import re
-import requests
 import scrapy
 from typing import List
 

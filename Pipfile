@@ -8,8 +8,9 @@ verify_ssl = true
 [packages]
 structlog = "*"
 scrapy = "*"
-requests = "*"
 click = "*"
+sqlalchemy = "*"
+psycopg2-binary = "*"
 
 [requires]
 python_version = "3.7"
